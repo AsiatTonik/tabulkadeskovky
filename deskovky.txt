@@ -1,3 +1,5 @@
-hra1
-hra2
-hra3
+hra1;true;1
+hra2;false;2
+hra3;true;1
+hra4;false;3
+hra5;true;2

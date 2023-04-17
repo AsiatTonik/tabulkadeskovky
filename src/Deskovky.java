@@ -1,110 +1,109 @@
 import javax.swing.*;
-import javax.xml.crypto.Data;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.awt.event.KeyEvent;
-import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 public class Deskovky extends JFrame {
-    private JButton dalsiButton;
-    private JButton predchoziButton;
-    private JCheckBox zakoupenoCheckBox;
-    private JTextArea textArea1;
-    private JPanel panel1;
-    private JSlider slider1;
+    private JPanel panelMain;
     private JTable table1;
-    private int indexSeznamu = 0;
-    private JMenuBar menuBar;
-    private JMenu menuFile;
-    private JMenu menuHelp;
-    private JMenuItem miOpenFile;
 
+    private JCheckBox checkBox;
+    private JButton predchoziButton;
+    private JButton dalsiButton;
+    private JRadioButton radioButton1;
+    private JRadioButton radioButton2;
+    private JRadioButton radioButton3;
+    private JTextField textField1;
 
-    private JFileChooser fileChooserOpen = new JFileChooser(".");
+    ButtonGroup btnGroup = new ButtonGroup();
 
-    private Data data = new Data();
-
-
-
-
-    private void initComponents() {
-        setContentPane(panel1);
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-
-        menuBar = new JMenuBar();
-        setJMenuBar(menuBar);
-        menuFile = new JMenu("File");
-        menuFile.setMnemonic(KeyEvent.VK_F); // Menu File se vyvolá klávesou F
-        menuBar.add(menuFile);
-        menuHelp = new JMenu("Help");
-        menuBar.add(menuHelp);
-
-        miOpenFile = new JMenuItem("Open...", KeyEvent.VK_O);
-        menuFile.add(miOpenFile);
-
-        miOpenFile.addActionListener(e -> openFile());
-
-        dalsiButton.addActionListener(e -> posunNaDalsi());
-        zobrazData();
-    }
-
-    private void openFile() {
-        int vysledek = fileChooserOpen.showOpenDialog(this);
-        if (vysledek == JFileChooser.APPROVE_OPTION) {
-            File selectedFile = fileChooserOpen.getSelectedFile();
-            // String selectedFilePath = selectedFile.getPath();
-            // JOptionPane.showMessageDialog(this,
-            //         "Chceš otevřít soubor: "+selectedFilePath);
-            data.loadFromFile(selectedFile);
-            zobrazData();
-        }
-    }
-
-    private void posunNaDalsi() {
-        data.next();
-        zobrazData();
-    }
-
-    private void zobrazData() {
-        table1.setText(data.getAktualniJmeno());
-        table1.setText(data.getAktualniIndex());
-    }
+    int pocetStranke=0;
+    private List<Deskovky1> seznam = new ArrayList<>();
+    private Table model;
     public Deskovky() {
-        vypln();
-        initComponents();
+        initTable();
+        vypis(0);
+        btnGroup.add(radioButton1);
+        btnGroup.add(radioButton2);
+        btnGroup.add(radioButton3);
         predchoziButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                indexSeznamu--;
-                vypln();
+                pocetStranke--;
+                vypis(pocetStranke);
+
+
             }
         });
         dalsiButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                indexSeznamu++;
-                vypln();
+                CteniZeSouboru cteni = new CteniZeSouboru();
+                pocetStranke++;
+                vypis(pocetStranke);
             }
         });
     }
-
-    public void vypln(){
-        CteniZeSouboru cteniZeSouboru = new CteniZeSouboru();
-        cteniZeSouboru.vypis();
-        List<Deskovky> seznam = cteniZeSouboru.getListDeskovky();
-        Deskovky deskovky = seznam.get(indexSeznamu);
-        table1.setText(deskovky.getNazev());
-        slider1.setValue(deskovky.getOblibenost());
-        zakoupenoCheckBox.setSelected(deskovky.isKoupeno());
+    private void initTable() {
+        CteniZeSouboru souborDeskovka = new CteniZeSouboru();
+        seznam = CteniZeSouboru.vypisSoubor("deskovky.txt",";");
+        model = new Table(seznam);
+        table1.setModel(model);
     }
+    void vypis(int index) {
+        CteniZeSouboru souborDeskovka = new CteniZeSouboru();
+        seznam = CteniZeSouboru.vypisSoubor("deskovky.txt",";");
+        if (index == seznam.size()-1){
+            predchoziButton.setEnabled(true);
+            dalsiButton.setEnabled(false);
+        } else if (index == 0) {
+            predchoziButton.setEnabled(false);
+            dalsiButton.setEnabled(true);
+        } else {
+            predchoziButton.setEnabled(true);
+            dalsiButton.setEnabled(true);
+        }
+        Deskovky1 pocetSeznam = seznam.get(index);
+        textField1.setText(pocetSeznam.getNazev());
+        if(pocetSeznam.isZakoupeno()== true) {
+            checkBox.setSelected(true);
+        } else {
+            checkBox.setSelected(false);
+        }
+
+        if(pocetSeznam.getOblibenost()==1) {
+            radioButton1.setSelected(true);
+        } else {
+            radioButton1.setSelected(false);
+        } if (pocetSeznam.getOblibenost()==2) {
+            radioButton2.setSelected(true);
+        } else {
+            radioButton2.setSelected(false);
+        } if (pocetSeznam.getOblibenost()== 3) {
+            radioButton3.setSelected(true);
+        } else {
+            radioButton3.setSelected(false);
+        }
+
+
+
+
+
+
+
+
+    }
+
 
     public static void main(String[] args) {
         Deskovky h = new Deskovky();
-        h.setContentPane(h.panel1);
+        h.setContentPane(h.panelMain);
 
-        h.setVisible(true);
+        h.setTitle("tabulka");
         h.pack();
-        h.setDefaultCloseOperation(EXIT_ON_CLOSE);
+        h.setVisible(true);
+        h.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+
     }
 }

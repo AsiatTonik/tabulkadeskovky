@@ -1,12 +1,12 @@
 public class Deskovky1 {
     private String nazev;
-    private int oblibenost;
     private boolean koupeno;
+    private int oblibenost;
 
-    public Deskovky1(String nazev, int oblibenost, boolean koupeno) {
+    public Deskovky1(String nazev, boolean koupeno, int oblibenost) {
         this.nazev = nazev;
-        this.oblibenost = oblibenost;
         this.koupeno = koupeno;
+        this.oblibenost = oblibenost;
     }
 
     public String getNazev() {
@@ -17,6 +17,14 @@ public class Deskovky1 {
         this.nazev = nazev;
     }
 
+    public boolean isZakoupeno() {
+        return koupeno;
+    }
+
+    public void setZakoupeno(boolean zakoupeno) {
+        this.koupeno = zakoupeno;
+    }
+
     public int getOblibenost() {
         return oblibenost;
     }
@@ -24,12 +32,5 @@ public class Deskovky1 {
     public void setOblibenost(int oblibenost) {
         this.oblibenost = oblibenost;
     }
-
-    public boolean isKoupeno() {
-        return koupeno;
-    }
-
-    public void setKoupeno(boolean koupeno) {
-        this.koupeno = koupeno;
-    }
 }
+
